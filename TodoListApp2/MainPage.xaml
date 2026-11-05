@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TodoListApp2"
+             x:Class="TodoListApp2.MainPage"
+             x:DataType="local:MainViewModel"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto, *" 
+          Padding="16" 
+          RowSpacing="15">
+
+        <!-- Верхняя панель: Поле ввода и круглая кнопка добавления -->
+        <Grid Grid.Row="0" 
+              ColumnDefinitions="*, Auto" 
+              ColumnSpacing="10" 
+              VerticalOptions="Center">
+
+            <!-- Поле ввода с рамкой как на макете -->
+            <Border Stroke="Black" 
+                    StrokeThickness="1.5" 
+                    Padding="10, 0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="4" />
+                </Border.StrokeShape>
+                <Entry Text="{Binding NewTaskTitle}" 
+                       Placeholder="Заголовок задачи" 
+                       PlaceholderColor="Gray"
+                       TextColor="Black"
+                       FontSize="15"
+                       BackgroundColor="Transparent"
+                       ReturnCommand="{Binding AddTaskCommand}" />
+            </Border>
+
+            <!-- Круглая кнопка добавления '+' -->
+            <Button Grid.Column="1"
+                    Text="+" 
+                    FontSize="24"
+                    FontAttributes="Bold"
+                    TextColor="Black"
+                    BackgroundColor="White"
+                    BorderColor="Black"
+                    BorderWidth="2"
+                    CornerRadius="25"
+                    WidthRequest="50"
+                    HeightRequest="50"
+                    Padding="0"
+                    Command="{Binding AddTaskCommand}">
+                <Button.Triggers>
+                    <Trigger TargetType="Button" Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.4" />
+                    </Trigger>
+                </Button.Triggers>
+            </Button>
+        </Grid>
+
+        <!-- Список задач -->
+        <CollectionView Grid.Row="1" 
+                        ItemsSource="{Binding Items}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="local:TodoItem">
+                    <Grid ColumnDefinitions="Auto, *, Auto" 
+                          Padding="0, 8" 
+                          VerticalOptions="Center">
+
+                        <!-- Отметка о выполнении/отмене выполнения -->
+                        <CheckBox Grid.Column="0" 
+                                  IsChecked="{Binding IsCompleted}" 
+                                  Color="Black"
+                                  VerticalOptions="Center" />
+
+                        <!-- Текст задачи (перечеркивается при выполнении) -->
+                        <Label Grid.Column="1" 
+                               Text="{Binding Title}" 
+                               TextColor="Black"
+                               FontSize="16"
+                               VerticalTextAlignment="Center"
+                               Margin="8, 0">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" 
+                                             Binding="{Binding IsCompleted}" 
+                                             Value="True">
+                                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                                    <Setter Property="TextColor" Value="Gray" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+
+                        <!-- Кнопка удаления задачи -->
+                        <Button Grid.Column="2"
+                                Text="🗑" 
+                                FontSize="18"
+                                TextColor="Black"
+                                BackgroundColor="Transparent"
+                                BorderWidth="0"
+                                WidthRequest="44"
+                                HeightRequest="44"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:MainViewModel}}, Path=DeleteTaskCommand}"
+                                CommandParameter="{Binding .}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>
